@@ -27,6 +27,7 @@ jobs:
 
       # Runs a set of commands using the runners shell
       # Need to configure wait until nifi registry is available
+      # Need to check script to change pg version
       - name: Run a multi-line script
         run: |
            kubectl delete pod git-sync-test-0
