@@ -29,5 +29,7 @@ jobs:
       - name: Run a multi-line script
         run: |
            kubectl delete pod git-sync-test-0
-           kubectl exec -it nifi-1635682238-0 /bin/bash
-           whoami
+           kubectl exec nifi-1635682238-0 -- bash "${NIFI_TOOLKIT_HOME}/bin/cli.sh nifi pg-list -ot json -u http://$(hostname -f):8080 > pgList.json
+           export pgId=$(jq --arg name "testing" '.[] | select(.name==$name) | .id' pgList.json)
+           ${NIFI_TOOLKIT_HOME}/bin/cli.sh nifi pg-get-all-versions -pgid ${pgId} -ot json -u http://$(hostname -f):8080 > pgVerList.json
+           export latestVer=$(jq '.versionedFlowSnapshotMetadataSet[] | .versionedFlowSnapshotMetadata.version' pgVerList.json | sort -r | head -n 1)"
