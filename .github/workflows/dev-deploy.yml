@@ -29,3 +29,5 @@ jobs:
       - name: Run a multi-line script
         run: |
            kubectl delete pod git-sync-test-0
+           kubectl exec -it nifi-1635682238-0 /bin/bash
+           whoami
