@@ -29,6 +29,7 @@ jobs:
       - name: Run a multi-line script
         run: |
           kubectl delete pod git-sync-test-0
+          while [[ $(kubectl get pods git-sync-test-0 -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
           kubectl exec nifi-1635682238-0 -- bash "
           ${NIFI_TOOLKIT_HOME}/bin/cli.sh nifi pg-list -ot json -u http://$(hostname -f):8080 > pgList.json
           export pgId=$(jq --arg name "testing" '.[] | select(.name==$name) | .id' pgList.json)
