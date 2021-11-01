@@ -40,4 +40,4 @@ jobs:
           && ${NIFI_TOOLKIT_HOME}/bin/cli.sh registry list-flow-versions -f ${flowId} -ot json -u http://nifi-reg-service:18080 > flowVer.json
           && export latestVer=$(jq '.[] | .version' flowVer.json | sort -nr | head -n 1)
           && ${NIFI_TOOLKIT_HOME}/bin/cli.sh nifi pg-change-version -pgid ${pgId} -fv ${latestVer} -u http://$(hostname -f):8080
-          && rm -rf pgList.json buckets.json flows.json flowVer.json"
+          "
