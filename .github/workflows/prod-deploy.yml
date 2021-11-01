@@ -28,16 +28,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          kubectl delete pod git-sync-test-0
-          while [[ $(kubectl get pods git-sync-test-0 -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
-          kubectl exec nifi-1635755265-0 -- bash -c "
-          ${NIFI_TOOLKIT_HOME}/bin/cli.sh nifi pg-list -ot json -u http://$(hostname -f):8080 > pgList.json
-          && export pgId=$(jq --arg name "testing" '.[] | select(.name==$name) | .id' pgList.json)
-          && ${NIFI_TOOLKIT_HOME}/bin/cli.sh registry list-buckets -ot json -u http://nifi-reg-service:18080 > buckets.json
-          && export bucketId=$(jq --arg name "test" '.[] | select(.name==$name) | .identifier' buckets.json)
-          && ${NIFI_TOOLKIT_HOME}/bin/cli.sh registry list-flows -b ${bucketId} -ot json -u http://nifi-reg-service:18080 > flows.json
-          && export flowId=$(jq --arg name "flow1" '.[] | select(.name==$name) | .identifier' flows.json)
-          && ${NIFI_TOOLKIT_HOME}/bin/cli.sh registry list-flow-versions -f ${flowId} -ot json -u http://nifi-reg-service:18080 > flowVer.json
-          && export latestVer=$(jq '.[] | .version' flowVer.json | sort -nr | head -n 1)
-          && ${NIFI_TOOLKIT_HOME}/bin/cli.sh nifi pg-change-version -pgid ${pgId} -fv ${latestVer} -u http://$(hostname -f):8080
-          && rm -rf pgList.json buckets.json flows.json flowVer.json"
+          kubectl delete pod nifi-registry-0
+          while [[ $(kubectl get pods nifi-registry-0 -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+          kubectl exec nifi-0 -- /bin/bash -c "bash /var/scripts/change-pg-version.sh"
+          
